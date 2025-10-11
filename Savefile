@@ -1,0 +1,9 @@
+webapp/
+ ├── index.html
+ ├── style.css
+ └── WEB-INF/
+      └── web.xml
+src/
+ └── com/example/
+      ├── DBConnection.java
+      └── RegisterServlet.java
