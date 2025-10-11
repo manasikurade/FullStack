@@ -1,0 +1,67 @@
+package com.example;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+
+@WebServlet("/register")
+public class RegisterServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        String name = req.getParameter("name");
+        String dob = req.getParameter("dob");
+        String email = req.getParameter("email");
+        String gender = req.getParameter("gender");
+        String jobRole = req.getParameter("jobRole");
+
+        try (Connection con = DBConnection.getConnection()) {
+            PreparedStatement ps = con.prepareStatement(
+                "INSERT INTO users (name, dob, email, gender, job_role) VALUES (?, ?, ?, ?, ?)"
+            );
+            ps.setString(1, name);
+            ps.setString(2, dob);
+            ps.setString(3, email);
+            ps.setString(4, gender);
+            ps.setString(5, jobRole);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        resp.sendRedirect("list");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        StringBuilder html = new StringBuilder("<h1>Registered Users</h1><ul>");
+
+        try (Connection con = DBConnection.getConnection()) {
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM users");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                html.append("<li>")
+                    .append(rs.getString("name")).append(" | ")
+                    .append(rs.getDate("dob")).append(" | ")
+                    .append(rs.getString("email")).append(" | ")
+                    .append(rs.getString("gender")).append(" | ")
+                    .append(rs.getString("job_role"))
+                    .append("</li>");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        html.append("</ul><a href='index.html'>Register Another User</a>");
+        resp.setContentType("text/html");
+        resp.getWriter().write(html.toString());
+    }
+}
