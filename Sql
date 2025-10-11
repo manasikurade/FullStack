@@ -1,0 +1,11 @@
+CREATE DATABASE registrationdb;
+USE registrationdb;
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    dob DATE,
+    email VARCHAR(100),
+    gender VARCHAR(10),
+    job_role VARCHAR(50)
+);
