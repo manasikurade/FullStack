@@ -1,0 +1,41 @@
+
+# --- Import libraries ---
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import adfuller
+
+# --- Generate sample non-stationary data (random walk) ---
+np.random.seed(42)
+data = np.cumsum(np.random.randn(100))  # cumulative sum creates trend
+plt.plot(data)
+plt.title("Time Series Data (Random Walk)")
+plt.show()
+
+# --- Apply ADF Test ---
+result = adfuller(data)
+print("ADF Statistic: %.4f" % result[0])
+print("p-value: %.4f" % result[1])
+print("Critical Values:")
+for key, value in result[4].items():
+    print(f"\t{key}: {value:.3f}")
+
+# --- Interpret result ---
+if result[1] <= 0.05:
+    print("\n✅ The series is stationary.")
+else:
+    print("\n❌ The series is non-stationary. Differencing needed.")
+
+# --- Apply differencing if non-stationary ---
+diff_data = np.diff(data)
+plt.plot(diff_data)
+plt.title("After Differencing (Stationary Series)")
+plt.show()
+
+# --- Check stationarity again ---
+result_diff = adfuller(diff_data)
+print("\nAfter Differencing:")
+print("ADF Statistic: %.4f" % result_diff[0])
+print("p-value: %.4f" % result_diff[1])
+if result_diff[1] <= 0.05:
+    print("✅ Now the series is stationary.")
