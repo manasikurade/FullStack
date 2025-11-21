@@ -1,0 +1,37 @@
+# --- Import required libraries ---
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+# --- Generate sample seasonal data ---
+np.random.seed(42)
+time = np.arange(48)
+seasonal = 10 + 3 * np.sin(2 * np.pi * time / 12)  # seasonal pattern
+trend = 0.2 * time
+noise = np.random.randn(48)
+data = seasonal + trend + noise
+
+plt.plot(data)
+plt.title("Seasonal Time Series")
+plt.show()
+
+# --- Split data into train and test ---
+train, test = data[:36], data[36:]
+
+# --- Apply Triple Exponential Smoothing (Holt-Winters) ---
+# Additive seasonality
+tes_model = ExponentialSmoothing(train, trend='add', seasonal='add', seasonal_periods=12)
+tes_fit = tes_model.fit(optimized=True)
+forecast = tes_fit.forecast(steps=len(test))
+
+# --- Plot original and forecast ---
+plt.plot(np.arange(len(data)), data, label='Original')
+plt.plot(np.arange(36, 48), forecast, color='red', label='Forecast')
+plt.title("Holt-Winters Additive Forecast")
+plt.legend()
+plt.show()
+
+# --- Accuracy check (optional) ---
+from sklearn.metrics import mean_squared_error
+mse = mean_squared_error(test, forecast)
+print("Mean Squared Error:", mse)
