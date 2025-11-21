@@ -1,0 +1,38 @@
+
+# --- Import required libraries ---
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+# --- Generate sample seasonal data ---
+np.random.seed(42)
+time = np.arange(120)
+seasonal = 10 + 5 * np.sin(2 * np.pi * time / 12)  # seasonal component
+noise = np.random.randn(120)
+data = seasonal + noise
+
+plt.plot(data)
+plt.title("Seasonal Time Series")
+plt.show()
+
+# --- Plot ACF and PACF for seasonal identification ---
+plot_acf(data, lags=36)
+plt.show()
+plot_pacf(data, lags=36)
+plt.show()
+
+# --- Fit SARIMA model ---
+# SARIMA(p,d,q)(P,D,Q,m)
+model = SARIMAX(data, order=(1,1,1), seasonal_order=(1,1,1,12))
+fit = model.fit(disp=False)
+print(fit.summary())
+
+# --- Forecast next 12 periods ---
+forecast = fit.get_forecast(steps=12)
+forecast_mean = forecast.predicted_mean
+plt.plot(data, label='Original')
+plt.plot(np.arange(len(data), len(data)+12), forecast_mean, color='red', label='Forecast')
+plt.legend()
+plt.title("SARIMA Forecast")
+plt.show()
