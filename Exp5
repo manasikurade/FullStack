@@ -1,0 +1,31 @@
+# --- Import required libraries ---
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+# --- Generate sample data (non-stationary time series) ---
+np.random.seed(42)
+data = np.cumsum(np.random.randn(100))  # Random walk
+plt.plot(data)
+plt.title("Original Time Series (Non-stationary)")
+plt.show()
+
+# --- Plot ACF and PACF ---
+plot_acf(data, lags=20)
+plt.show()
+plot_pacf(data, lags=20)
+plt.show()
+
+# --- Fit ARIMA model (p=1, d=1, q=1) ---
+model = ARIMA(data, order=(1,1,1))
+fit = model.fit()
+print(fit.summary())
+
+# --- Forecast future values ---
+forecast = fit.forecast(steps=10)
+plt.plot(range(len(data)), data, label='Original')
+plt.plot(range(len(data), len(data)+10), forecast, label='Forecast', color='red')
+plt.legend()
+plt.title("ARIMA(1,1,1) Forecast")
+plt.show()
