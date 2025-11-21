@@ -1,0 +1,33 @@
+
+# --- Import libraries ---
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.ar_model import AutoReg
+from statsmodels.tsa.arima.model import ARIMA
+
+# --- Generate sample time series data ---
+np.random.seed(0)
+data = np.cumsum(np.random.randn(100))  # random walk
+plt.plot(data)
+plt.title("Sample Time Series Data")
+plt.show()
+
+# --- Auto Regression (AR) model ---
+train, test = data[:80], data[80:]
+model_ar = AutoReg(train, lags=2).fit()
+pred_ar = model_ar.predict(start=len(train), end=len(data)-1)
+plt.plot(test, label='Actual')
+plt.plot(pred_ar, label='Predicted (AR)')
+plt.legend()
+plt.title("Auto Regression Model")
+plt.show()
+
+# --- Moving Average (MA) model ---
+model_ma = ARIMA(train, order=(0,0,2)).fit()
+pred_ma = model_ma.forecast(steps=20)
+plt.plot(test, label='Actual')
+plt.plot(pred_ma, label='Predicted (MA)')
+plt.legend()
+plt.title("Moving Average Model")
+plt.show()
