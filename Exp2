@@ -1,0 +1,25 @@
+
+imporimportt numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PowerTransformer, StandardScaler, MinMaxScaler
+# Sample time series data
+np.random.seed(0)
+time = np.arange(100)
+data = 0.5*time + 10*npimport*np.pi*time/12) + np.random.normal(0, 2, 100)
+df = pd.DataFrame({'Time': time, 'Value': data})
+# Power Transform
+df['Power'] = PowerTransformer(method='yeo-johnson').fit_transform(df[['Value']])
+# Differencing
+df['Diff'] = df['Power'].diff()
+# Standardization
+df['Std'] = StandardScaler().fit_transform(df[['Diff']].fillna(0))
+# Normalization
+df['Norm'] = MinMaxScaler().fit_transform(df[['Std']])
+# Plot results
+plt.figure(figsize=(10,4))
+plt.plot(df['Time'], df['Value'], label='Original')
+plt.plot(df['Time'], df['Norm'], label='Preprocessed', color='red')
+plt.title('Time Series Preprocessing')
+plt.xlabel('Time'); plt.ylabel('Value'); plt.legend(); plt.show()
+print(df.head())
